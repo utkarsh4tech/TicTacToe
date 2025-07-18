@@ -2,39 +2,49 @@ package PlayerStrategies.ConcreteStrategies;
 
 import PlayerStrategies.PlayerStrategy;
 import Utility.Board;
+import Utility.ConsoleInputProvider;
 import Utility.Position;
+import Utility.InputProvider;
 
 import java.util.Scanner;
 
 public class HumanPlayerStrategy implements PlayerStrategy {
-    private Scanner scanner;
+    private InputProvider inputProvider;
     private String playerName;
     // HumanPlayerStrategy Constructor
     public HumanPlayerStrategy(String playerName) {
         this.playerName = playerName;
-        this.scanner = new Scanner(System.in);
+        inputProvider = new ConsoleInputProvider();
     }
+
     @Override
     public Position makeMove(Board board) {
         while (true) {
+            // Generate a dynamic prompt, e.g., "A1" to "F6" for a 6x6 board
+            char lastColChar = (char)('A' + board.getColumns() - 1);
+            int lastRowInt = board.getRows();
             System.out.printf(
-                    "%s, enter your move (row [0-2] and column [0-2]): ", playerName);
+                    "%s, enter your move (e.g., A1 to %c%d): ",
+                    playerName, lastColChar, lastRowInt);
+
             try {
-                // Prompts the human player to enter their move.
-                int row = scanner.nextInt();
-                int col = scanner.nextInt();
+                String input = inputProvider.getPlayerInput().trim().toUpperCase();
+                if (input.length() < 2) { // Allow for multi-digit row numbers like "C10"
+                    throw new IllegalArgumentException("Invalid format.");
+                }
+
+                int col = input.charAt(0) - 'A';
+                int row = Integer.parseInt(input.substring(1)) - 1; // Parse multi-digit numbers
+
                 Position move = new Position(row, col);
-                // Validates the player's input.
-                // If the move is valid, returns the position.
+
                 if (board.isValidMove(move)) {
                     return move;
+                } else {
+                    System.out.println("Invalid or occupied cell. Try again.");
                 }
-                // If the move is invalid, prompts the player to try again.
-                System.out.println("Invalid move. Try again.");
             } catch (Exception e) {
-                System.out.println(
-                        "Invalid input. Please enter row and column as numbers.");
-                scanner.nextLine(); // Clear input buffer
+                System.out.println("Invalid input. Please use the coordinate format (e.g., A1).");
             }
         }
     }

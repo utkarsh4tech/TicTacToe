@@ -100,7 +100,26 @@ public class Board {
     }
 
     public void printBoard() {
+
+        // 1. Print column headers (A, B, C...)
+        System.out.print(" "); // Indent for row numbers
+        for (int j = 0; j < columns; j++) {
+            System.out.printf("  %c ", (char)('A' + j));
+        }
+        System.out.println();
+
+        // Build the dynamic separator line (e.g., "  ---+---+---")
+        StringBuilder separator = new StringBuilder("  ");
+        for (int j = 0; j < columns; j++) {
+            separator.append("---");
+            if (j < columns - 1) {
+                separator.append("+");
+            }
+        }
+
+        // 2. Print each row with its number
         for (int i = 0; i < rows; i++) {
+            System.out.printf("%d ", i + 1); // Print row number
             for (int j = 0; j < columns; j++) {
                 Symbol symbol = grid[i][j];
                 switch (symbol) {
@@ -120,9 +139,17 @@ public class Board {
             }
             System.out.println();
             if (i < rows - 1) {
-                System.out.println("---+---+---");
+                System.out.println(separator.toString());
             }
         }
         System.out.println();
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getColumns() {
+        return columns;
     }
 }
