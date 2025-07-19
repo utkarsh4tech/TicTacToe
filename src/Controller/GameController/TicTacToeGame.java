@@ -13,11 +13,11 @@ import Utility.Player;
 import Utility.Position;
 
 public class TicTacToeGame implements BoardGames {
-    private Board board;
-    private Player playerX;
-    private Player playerO;
-    private Player currentPlayer;
-    private GameContext gameContext;
+    private final Board board;
+    private final Player playerX;
+    private final Player playerO;
+    private final Player currentPlayer;
+    private final GameContext gameContext;
 
     public TicTacToeGame(
             PlayerStrategy xStrategy,
