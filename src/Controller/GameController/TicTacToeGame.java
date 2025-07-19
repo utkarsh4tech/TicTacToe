@@ -1,7 +1,7 @@
 package Controller.GameController;
 
 import Controller.BoardGames;
-import GameStateHandler.ConcreteStates.DrawState; 
+import GameStateHandler.ConcreteStates.DrawState;
 import GameStateHandler.ConcreteStates.OWonState;
 import GameStateHandler.ConcreteStates.XWonState;
 import GameStateHandler.Context.GameContext;
@@ -20,11 +20,11 @@ public class TicTacToeGame implements BoardGames {
     private GameContext gameContext;
 
     public TicTacToeGame(
-            PlayerStrategy xStrategy, 
+            PlayerStrategy xStrategy,
             PlayerStrategy oStrategy,
-            int rows, 
+            int rows,
             int columns
-        ) {
+    ) {
         board = new Board(rows, columns);
         playerX = new Player(Symbol.X, xStrategy);
         playerO = new Player(Symbol.O, oStrategy);
@@ -36,9 +36,9 @@ public class TicTacToeGame implements BoardGames {
     public void play() {
         do {
             board.printBoard();
-            Position move = currentPlayer.getPlayerStrategy().makeMove(board);
+            Position move = currentPlayer.getPlayerStrategy().makeMove(board, currentPlayer.getSymbol());
             board.makeMove(move, currentPlayer.getSymbol());
-            board.checkGameState(gameContext, currentPlayer); 
+            board.checkGameState(gameContext, currentPlayer);
             if (!gameContext.isGameOver()) {
                 switchPlayer();
             }
@@ -50,7 +50,7 @@ public class TicTacToeGame implements BoardGames {
         currentPlayer = (currentPlayer == playerX) ? playerO : playerX;
     }
 
-    
+
     private void announceResult() {
         GameState state = gameContext.getCurrentState();
         board.printBoard();
@@ -58,7 +58,7 @@ public class TicTacToeGame implements BoardGames {
             System.out.println("Player X wins!");
         } else if (state instanceof OWonState) {
             System.out.println("Player O wins!");
-        } else if (state instanceof DrawState) { 
+        } else if (state instanceof DrawState) {
             System.out.println("It's a draw!");
         }
     }

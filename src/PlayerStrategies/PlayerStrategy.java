@@ -1,5 +1,6 @@
 package PlayerStrategies;
 
+import CommonEnum.Symbol;
 import Utility.Board;
 import Utility.Position;
 
@@ -8,6 +9,6 @@ import Utility.Position;
 public interface PlayerStrategy {
     // Allows different player strategies to be used interchangeably without
     // modifying client code.
-    Position makeMove(Board board);
+    Position makeMove(Board board, Symbol mySymbol);
 }
 

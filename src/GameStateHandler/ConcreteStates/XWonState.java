@@ -6,8 +6,8 @@ import Utility.Player;
 
 public class XWonState implements GameState {
     @Override
-    public void next(GameContext context, Player player , boolean hasWon) {
-       // Game over, no next state
+    public void next(GameContext context, Player player, boolean hasWon) {
+        // Game over, no next state
     }
 
     @Override

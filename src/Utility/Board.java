@@ -2,12 +2,15 @@ package Utility;
 
 import CommonEnum.Symbol;
 import GameStateHandler.Context.GameContext;
-import GameStateHandler.ConcreteStates.DrawState; 
+import GameStateHandler.ConcreteStates.DrawState;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class Board {
     private final int rows;
     private final int columns;
-    private Symbol[][] grid;
+    private final Symbol[][] grid;
 
     public Board(int rows, int columns) {
         this.rows = rows;
@@ -21,15 +24,16 @@ public class Board {
     }
 
     public boolean isValidMove(Position pos) {
-        return pos.row >= 0 && pos.row < rows && pos.col >= 0 && pos.col < columns
-                && grid[pos.row][pos.col] == Symbol.EMPTY;
+        return (
+            pos.row >= 0 && pos.row < rows && pos.col >= 0 && pos.col < columns
+            && grid[pos.row][pos.col] == Symbol.EMPTY
+        );
     }
 
     public void makeMove(Position pos, Symbol symbol) {
         grid[pos.row][pos.col] = symbol;
     }
 
-    // New method to check if the board is full
     private boolean isBoardFull() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -41,51 +45,20 @@ public class Board {
         return true;
     }
 
-    // Updated checkGameState method
     public void checkGameState(GameContext context, Player currentPlayer) {
-        // Check for a win (rows, columns, diagonals)
-        for (int i = 0; i < rows; i++) {
-            if (grid[i][0] != Symbol.EMPTY && isWinningLine(grid[i])) {
-                context.next(currentPlayer, true);
-                return;
-            }
-        }
+        Symbol winner = checkWinner(); // Centralized call to check for a winner
 
-        for (int i = 0; i < columns; i++) {
-            Symbol[] column = new Symbol[rows];
-            for (int j = 0; j < rows; j++) {
-                column[j] = grid[j][i];
-            }
-            if (column[0] != Symbol.EMPTY && isWinningLine(column)) {
-                context.next(currentPlayer, true);
-                return;
-            }
-        }
-
-        if (rows == columns) { // Diagonals only make sense on a square board
-            Symbol[] diagonal1 = new Symbol[rows];
-            Symbol[] diagonal2 = new Symbol[rows];
-            for (int i = 0; i < rows; i++) {
-                diagonal1[i] = grid[i][i];
-                diagonal2[i] = grid[i][columns - 1 - i];
-            }
-            if (diagonal1[0] != Symbol.EMPTY && isWinningLine(diagonal1)) {
-                context.next(currentPlayer, true);
-                return;
-            }
-            if (diagonal2[0] != Symbol.EMPTY && isWinningLine(diagonal2)) {
-                context.next(currentPlayer, true);
-                return;
-            }
-        }
-
-        // If no winner, check for a draw
-        if (isBoardFull()) {
-            context.setState(new DrawState());
+        if (winner != Symbol.EMPTY) {
+            context.next(currentPlayer, true); // A winner was found
             return;
         }
 
-        // If no winner and not a draw, continue the game
+        if (isBoardFull()) {
+            context.setState(new DrawState()); // It's a draw
+            return;
+        }
+
+        // No winner and not a draw, so continue the game
         context.next(currentPlayer, false);
     }
 
@@ -104,7 +77,7 @@ public class Board {
         // 1. Print column headers (A, B, C...)
         System.out.print(" "); // Indent for row numbers
         for (int j = 0; j < columns; j++) {
-            System.out.printf("  %c ", (char)('A' + j));
+            System.out.printf("  %c ", (char) ('A' + j));
         }
         System.out.println();
 
@@ -151,5 +124,53 @@ public class Board {
 
     public int getColumns() {
         return columns;
+    }
+
+    public List<Position> getEmptyCells() {
+        List<Position> emptyCells = new ArrayList<>();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (grid[i][j] == Symbol.EMPTY) {
+                    emptyCells.add(new Position(i, j));
+                }
+            }
+        }
+        return emptyCells;
+    }
+
+    public Symbol checkWinner() {
+        // Check rows
+        for (int i = 0; i < rows; i++) {
+            if (isWinningLine(grid[i])) return grid[i][0];
+        }
+
+        // Check columns
+        for (int j = 0; j < columns; j++) {
+            Symbol[] column = new Symbol[rows];
+            for (int i = 0; i < rows; i++) {
+                column[i] = grid[i][j];
+            }
+            if (isWinningLine(column)) return column[0];
+        }
+
+        // Check diagonals (only if square)
+        if (rows == columns) {
+            Symbol[] diag1 = new Symbol[rows];
+            Symbol[] diag2 = new Symbol[rows];
+            for (int i = 0; i < rows; i++) {
+                diag1[i] = grid[i][i];
+                diag2[i] = grid[i][rows - 1 - i];
+            }
+            if (isWinningLine(diag1)) return diag1[0];
+            if (isWinningLine(diag2)) return diag2[0];
+        }
+
+        return Symbol.EMPTY; // No winner
+    }
+
+    public void undoMove(Position pos) {
+        if (pos.row >= 0 && pos.row < rows && pos.col >= 0 && pos.col < columns) {
+            grid[pos.row][pos.col] = Symbol.EMPTY;
+        }
     }
 }

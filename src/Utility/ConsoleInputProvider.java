@@ -2,15 +2,14 @@ package Utility;
 
 import java.util.Scanner;
 
-public class ConsoleInputProvider implements InputProvider {
+public class ConsoleInputProvider {
     private Scanner scanner;
 
     public ConsoleInputProvider() {
         this.scanner = new Scanner(System.in);
     }
 
-    @Override
     public String getPlayerInput() {
-        return scanner.nextLine();
+        return scanner.nextLine().trim().toUpperCase();
     }
 }
