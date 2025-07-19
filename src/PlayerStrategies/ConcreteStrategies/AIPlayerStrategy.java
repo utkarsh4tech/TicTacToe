@@ -13,7 +13,11 @@ public class AIPlayerStrategy implements PlayerStrategy {
     public Position makeMove(Board board, Symbol mySymbol) {
         System.out.println("AI is thinking...");
         MoveScore bestMove = minimax(board, mySymbol, mySymbol); // Pass mySymbol to start
-        System.out.printf("AI (%s) chooses move %s\n", mySymbol, bestMove.position);
+
+        char colChar = (char) ('A' + bestMove.position.col);
+        int rowNum = bestMove.position.row + 1;
+        String formattedMove = "" + colChar + rowNum;
+        System.out.printf("AI (%s) chooses move %s\n", mySymbol, formattedMove);
         return bestMove.position;
     }
 
